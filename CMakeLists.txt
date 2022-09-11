@@ -9,12 +9,6 @@ include(deps)
 include(warnings)
 get_dependencies()
 
-add_executable(hello_world src/main.cpp)
-target_link_libraries(
-  hello_world
-  PRIVATE fmt::fmt
-          glad
-          glfw
-          glm::glm
-          stb_image
-          warnings)
+add_library(Shader src/Shader/Shader.cpp)
+target_include_directories(Shader PUBLIC src/Shader)
+target_link_libraries(Shader PUBLIC glad glm::glm PRIVATE fmt::fmt warnings)
