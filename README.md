@@ -10,15 +10,15 @@ This assumes you have GLFW installed and CMake is able to find it.
 
 Glad is provided in the `external` directory.
 
-stb_image is 
+stb_image is placed along the source files that need it.
 
 ## Attribution and licensing
 
 The code samples provided by [Joey de Vries](http://joeydevries.com/) are published under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/legalcode).
 
-[GLFW License](https://www.glfw.org/license)
+[Glad License](https://github.com/Dav1dde/glad/blob/master/LICENSE)
 
-[GLad License](https://github.com/Dav1dde/glad/blob/master/LICENSE)
+[GLFW License](https://www.glfw.org/license)
 
 [stb_image](https://github.com/nothings/stb/blob/master/LICENSE)
 
