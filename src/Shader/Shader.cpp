@@ -16,6 +16,17 @@ static void checkAndLogShaderError(GLuint shader, ShaderLogType type);
 static GLuint linkShadersIntoProgram(const std::vector<GLuint> &shaders);
 static void freeShaders(const std::vector<GLuint> &shaders);
 
+static void
+stubIv(GLuint, GLenum, GLint *success)
+{
+    *success = GL_FALSE;
+}
+
+static void
+stubInfoLog(GLuint, GLsizei, GLsizei *, GLchar *)
+{
+}
+
 static constexpr auto
 getIvFuncFromType(ShaderLogType type)
 {
@@ -24,6 +35,8 @@ getIvFuncFromType(ShaderLogType type)
         return glGetShaderiv;
     case (ShaderLogType::PROGRAM):
         return glGetProgramiv;
+    default:
+        return stubIv;
     }
 }
 
@@ -35,6 +48,8 @@ getIvStatusFromType(ShaderLogType type)
         return GL_COMPILE_STATUS;
     case (ShaderLogType::PROGRAM):
         return GL_LINK_STATUS;
+    default:
+        return 0;
     }
 }
 
@@ -46,6 +61,8 @@ getInfoLogFuncFromType(ShaderLogType type)
         return glGetShaderInfoLog;
     case (ShaderLogType::PROGRAM):
         return glGetProgramInfoLog;
+    default:
+        return stubInfoLog;
     }
 }
 
@@ -65,7 +82,7 @@ Shader::Shader(const std::filesystem::path &vertex_path, const std::filesystem::
 static std::string
 readFile(const std::filesystem::path &file_path)
 {
-    static constexpr char DELIMITER {EOF};
+    static constexpr char DELIMITER{EOF};
     std::ifstream file_stream{file_path, std::ios::in};
     std::string file_content{};
 
@@ -91,8 +108,8 @@ compileShader(const GLchar *shader_content, GLenum shader_type)
 static void
 checkAndLogShaderError(GLuint shader, ShaderLogType type)
 {
-    static constexpr std::size_t INFO_LOG_SIZE{1024};
-    GLchar info_log[INFO_LOG_SIZE];
+    static constexpr GLsizei INFO_LOG_SIZE{1024};
+    GLchar info_log[INFO_LOG_SIZE] = "";
     GLint success;
 
     auto iv_func = getIvFuncFromType(type);
