@@ -10,11 +10,11 @@ enum class ShaderLogType
     PROGRAM
 };
 
-static std::string readFile(const std::filesystem::path &file_path);
-static GLuint compileShader(const GLchar *shader_content, GLenum type);
-static void checkAndLogShaderError(GLuint shader, ShaderLogType type);
-static GLuint linkShadersIntoProgram(const std::vector<GLuint> &shaders);
-static void freeShaders(const std::vector<GLuint> &shaders);
+static std::string readFile(const std::filesystem::path &file_path) noexcept;
+static GLuint compileShader(const GLchar *shader_content, GLenum type) noexcept;
+static void checkAndLogShaderError(GLuint shader, ShaderLogType type) noexcept;
+static GLuint linkShadersIntoProgram(const std::vector<GLuint> &shaders) noexcept;
+static void freeShaders(const std::vector<GLuint> &shaders) noexcept;
 
 static void
 stubIv(GLuint, GLenum, GLint *success)
@@ -66,7 +66,7 @@ getInfoLogFuncFromType(ShaderLogType type)
     }
 }
 
-Shader::Shader(const std::filesystem::path &vertex_path, const std::filesystem::path &fragment_path)
+Shader::Shader(const std::filesystem::path &vertex_path, const std::filesystem::path &fragment_path) noexcept
 {
     const std::string vertex_content = readFile(vertex_path);
     const std::string fragment_content = readFile(fragment_path);
@@ -79,8 +79,28 @@ Shader::Shader(const std::filesystem::path &vertex_path, const std::filesystem::
     freeShaders({vertex_shader, fragment_shader});
 }
 
+Shader::~Shader() noexcept
+{
+    glDeleteProgram(shader_program);
+}
+
+Shader::Shader(Shader &&shader) noexcept : shader_program{shader.shader_program}
+{
+    /* 0 is defined to be silently ignored in the GL specification */
+    shader.shader_program = 0;
+}
+
+Shader &
+Shader::operator=(Shader &&shader) noexcept
+{
+    shader_program = shader.shader_program;
+    /* 0 is defined to be silently ignored in the GL specification */
+    shader.shader_program = 0;
+    return *this;
+}
+
 static std::string
-readFile(const std::filesystem::path &file_path)
+readFile(const std::filesystem::path &file_path) noexcept
 {
     static constexpr char DELIMITER{EOF};
     std::ifstream file_stream{file_path, std::ios::in};
@@ -96,7 +116,7 @@ readFile(const std::filesystem::path &file_path)
 }
 
 static GLuint
-compileShader(const GLchar *shader_content, GLenum shader_type)
+compileShader(const GLchar *shader_content, GLenum shader_type) noexcept
 {
     GLuint shader = glCreateShader(shader_type);
     glShaderSource(shader, 1, &shader_content, nullptr);
@@ -106,7 +126,7 @@ compileShader(const GLchar *shader_content, GLenum shader_type)
 }
 
 static void
-checkAndLogShaderError(GLuint shader, ShaderLogType type)
+checkAndLogShaderError(GLuint shader, ShaderLogType type) noexcept
 {
     static constexpr GLsizei INFO_LOG_SIZE{1024};
     GLchar info_log[INFO_LOG_SIZE] = "";
@@ -124,7 +144,7 @@ checkAndLogShaderError(GLuint shader, ShaderLogType type)
 }
 
 static GLuint
-linkShadersIntoProgram(const std::vector<GLuint> &shaders)
+linkShadersIntoProgram(const std::vector<GLuint> &shaders) noexcept
 {
     GLuint program = glCreateProgram();
     for (GLuint shader : shaders) {
@@ -136,7 +156,7 @@ linkShadersIntoProgram(const std::vector<GLuint> &shaders)
 }
 
 static void
-freeShaders(const std::vector<GLuint> &shaders)
+freeShaders(const std::vector<GLuint> &shaders) noexcept
 {
     for (GLuint shader : shaders) {
         glDeleteShader(shader);
@@ -144,62 +164,62 @@ freeShaders(const std::vector<GLuint> &shaders)
 }
 
 void
-Shader::useProgram(void) const
+Shader::useProgram(void) const noexcept
 {
     glUseProgram(shader_program);
 }
 
 void
-Shader::setUniform(const std::string &name, GLint value) const
+Shader::setUniform(const std::string &name, GLint value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniform1i(location, value);
 }
 
 void
-Shader::setUniform(const std::string &name, GLfloat value) const
+Shader::setUniform(const std::string &name, GLfloat value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniform1f(location, value);
 }
 
 void
-Shader::setUniform(const std::string &name, const glm::vec2 &value) const
+Shader::setUniform(const std::string &name, const glm::vec2 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniform2f(location, value.x, value.y);
 }
 
 void
-Shader::setUniform(const std::string &name, const glm::vec3 &value) const
+Shader::setUniform(const std::string &name, const glm::vec3 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniform3f(location, value.x, value.y, value.z);
 }
 
 void
-Shader::setUniform(const std::string &name, const glm::vec4 &value) const
+Shader::setUniform(const std::string &name, const glm::vec4 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
 void
-Shader::setUniform(const std::string &name, const glm::mat2 &value) const
+Shader::setUniform(const std::string &name, const glm::mat2 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniformMatrix2fv(location, 1, GL_FALSE, &value[0][0]);
 }
 
 void
-Shader::setUniform(const std::string &name, const glm::mat3 &value) const
+Shader::setUniform(const std::string &name, const glm::mat3 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniformMatrix3fv(location, 1, GL_FALSE, &value[0][0]);
 }
 
 void
-Shader::setUniform(const std::string &name, const glm::mat4 &value) const
+Shader::setUniform(const std::string &name, const glm::mat4 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
