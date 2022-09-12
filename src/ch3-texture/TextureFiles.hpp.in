@@ -1,0 +1,10 @@
+#ifndef SHADINGFILES_HPP
+#define SHADINGFILES_HPP
+
+static constexpr char VERTEX_SHADER_FILE[] = "@VERTEX_SHADER_FILE@";
+static constexpr char FRAGMENT_SHADER_FILE[] = "@FRAGMENT_SHADER_FILE@";
+
+static constexpr char YANFEI_FILE[] = "@YANFEI_FILE@";
+static constexpr char HUTAO_FILE[] = "@HUTAO_FILE@";
+
+#endif

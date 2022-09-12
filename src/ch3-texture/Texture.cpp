@@ -1,7 +1,7 @@
 #include "../BaseApplication.hpp"
 
 #include "Shader.hpp"
-#include "ShadingFiles.hpp"
+#include "TextureFiles.hpp"
 #include "Utils.hpp"
 
 #include <memory>
@@ -15,13 +15,39 @@ class Texture : public BaseApplication
     void
     setup(void) override
     {
-        static constexpr std::array<GLfloat, 18> vertices{
-            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, /* Bottom left */
-            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  /* Bottom right */
-            0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,   /* Top */
+        static constexpr std::array<GLfloat, 20> vertices{
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f,   /* Top right */
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  /* Bottom right */
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, /* Bottom left */
+            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,  /* Top left */
         };
 
-        static constexpr std::array<GLuint, 3> indices{0, 1, 2};
+        static constexpr std::array<GLuint, 6> indices{
+            0, 1, 3, /* First triangle */
+            1, 2, 3, /* Second triangle */
+        };
+
+        Utils::Image yanfei{YANFEI_FILE};
+        Utils::Image hutao{HUTAO_FILE};
+
+        const Utils::ImageData &yanfei_data = yanfei.getImageData();
+        const Utils::ImageData &hutao_data = hutao.getImageData();
+
+        glGenTextures(static_cast<GLsizei>(textures.size()), textures.data());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[0]);
+        if (nullptr != yanfei_data.pixels) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, yanfei_data.width, yanfei_data.height, 0, GL_RGB, GL_UNSIGNED_BYTE, yanfei_data.pixels);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textures[1]);
+        if (nullptr != hutao_data.pixels) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, hutao_data.width, hutao_data.height, 0, GL_RGB, GL_UNSIGNED_BYTE, hutao_data.pixels);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
 
         glGenVertexArrays(static_cast<GLsizei>(vaos.size()), vaos.data());
         glGenBuffers(static_cast<GLsizei>(vbos.size()), vbos.data());
@@ -32,19 +58,19 @@ class Texture : public BaseApplication
         glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
         glBufferData(GL_ARRAY_BUFFER, Utils::arrayDataSize(vertices), vertices.data(), GL_STATIC_DRAW);
 
-        /* Copie the indices into the EBO */
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, Utils::arrayDataSize(indices), indices.data(), GL_STATIC_DRAW);
 
-        /* Set vertices position attributes */
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), nullptr);
         glEnableVertexAttribArray(0);
 
-        /* Set vertices colour attributes*/
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void *>(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), reinterpret_cast<void *>(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
 
         shader = std::make_unique<Shader>(VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE);
+        shader->useProgram();
+        shader->setUniform("texture0", 0);
+        shader->setUniform("texture1", 1);
     }
 
     void
@@ -68,14 +94,22 @@ class Texture : public BaseApplication
             updateVerticalOffset(0.02f);
         }
 
-        /* Triangle flip */
+        /* Horizontal flip */
         static bool is_space_released = true;
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && is_space_released) {
-            updateFlip();
+            updateHorizontalFlip();
             is_space_released = false;
         }
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
             is_space_released = true;
+        }
+
+        /* Set texture mixing */
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+            updateTextureMix(0.02f);
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            updateTextureMix(-0.02f);
         }
     }
 
@@ -98,11 +132,20 @@ class Texture : public BaseApplication
     }
 
     void
-    updateFlip(void)
+    updateHorizontalFlip(void)
     {
         static GLint flip = 1;
         flip *= -1;
         shader->setUniform("flip", flip);
+    }
+
+    void
+    updateTextureMix(GLfloat increment)
+    {
+        static GLfloat mixer = 0.5f;
+        mixer += increment;
+        mixer = Utils::clamp(mixer, 0.0f, 1.0f);
+        shader->setUniform("mixer", mixer);
     }
 
     void
@@ -114,11 +157,15 @@ class Texture : public BaseApplication
 
         /* Set the shader program and attributes (through vao) */
         shader->useProgram();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[0]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textures[1]);
         glBindVertexArray(vaos[0]);
 
         /* Bind the element buffer and draw it */
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
         /* Keep last */
         glfwSwapBuffers(window);
@@ -134,6 +181,7 @@ class Texture : public BaseApplication
 
     std::unique_ptr<Shader> shader = nullptr;
     std::array<GLuint, 1> vaos, vbos, ebos;
+    std::array<GLuint, 2> textures;
     Utils::ScrollingColour scroller{};
 };
 

@@ -27,6 +27,7 @@ target_link_libraries(
 
 add_library(Utils src/Utils/Utils.cpp)
 target_include_directories(Utils PUBLIC src/Utils)
+target_link_libraries(Utils PRIVATE fmt::fmt stb_image)
 
 add_executable(HelloTriangle src/ch1-hello-triangle/HelloTriangle.cpp)
 target_link_libraries(
@@ -54,3 +55,17 @@ target_link_libraries(
 get_filename_component(VERTEX_SHADER_FILE "src/ch2-shading/shader.vs" ABSOLUTE)
 get_filename_component(FRAGMENT_SHADER_FILE "src/ch2-shading/shader.fs" ABSOLUTE)
 configure_file(src/ch2-shading/ShadingFiles.hpp.in ShadingFiles.hpp)
+
+add_executable(Texture src/ch3-texture/Texture.cpp)
+target_link_libraries(
+  Texture
+  PRIVATE glad
+          glfw
+          Shader
+          Utils)
+
+get_filename_component(VERTEX_SHADER_FILE "src/ch3-texture/shader.vs" ABSOLUTE)
+get_filename_component(FRAGMENT_SHADER_FILE "src/ch3-texture/shader.fs" ABSOLUTE)
+get_filename_component(YANFEI_FILE "src/ch3-texture/yanfei.jpg" ABSOLUTE)
+get_filename_component(HUTAO_FILE "src/ch3-texture/hutao.jpg" ABSOLUTE)
+configure_file(src/ch3-texture/TextureFiles.hpp.in TextureFiles.hpp)
