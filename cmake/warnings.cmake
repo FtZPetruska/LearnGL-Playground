@@ -1,7 +1,7 @@
 # Adapted from:
 # https://github.com/aminya/project_options/blob/main/src/CompilerWarnings.cmake
 
-function(set_warnings)
+macro(set_warnings)
   set(MSVC_WARNINGS
       /W4 # Baseline reasonable warnings
       /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss
@@ -100,6 +100,6 @@ function(set_warnings)
     -Woverloaded-virtual
     -Wuseless-cast)
 
-  set(CMAKE_C_FLAGS ${PROJECT_WARNINGS_C})
-  set(CMAKE_CXX_FLAGS ${PROJECT_WARNINGS_CXX})
-endfunction()
+  list(JOIN PROJECT_WARNINGS_C " " CMAKE_C_FLAGS)
+  list(JOIN PROJECT_WARNINGS_CXX " " CMAKE_CXX_FLAGS)
+endmacro()
