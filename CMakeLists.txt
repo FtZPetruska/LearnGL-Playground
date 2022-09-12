@@ -34,7 +34,8 @@ target_link_libraries(
   PRIVATE fmt::fmt
           glad
           glfw
-          Shader)
+          Shader
+          Utils)
 
 get_filename_component(VERTEX_SHADER_FILE "src/ch1-hello-triangle/shader.vs"
                        ABSOLUTE)

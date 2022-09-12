@@ -2,6 +2,7 @@
 
 #include "HelloTriangleFiles.hpp"
 #include "Shader.hpp"
+#include "Utils.hpp"
 
 #include <memory>
 
@@ -14,7 +15,7 @@ class HelloTriange : public BaseApplication
     void
     setup(void) override
     {
-        static constexpr GLfloat horizontal_vertices[] = {
+        static constexpr std::array<GLfloat, 15> horizontal_vertices{
             0.0f, 0.0f, 0.0f,   /* Center */
             -0.6f, 0.5f, 0.0f,  /* Left-Up */
             -0.6f, -0.5f, 0.0f, /* Left-Down */
@@ -22,7 +23,7 @@ class HelloTriange : public BaseApplication
             0.6f, -0.5f, 0.0f,  /* Right-Down */
         };
 
-        static constexpr GLfloat vertical_vertices[] = {
+        static constexpr std::array<GLfloat, 15> vertical_vertices{
             0.0f, 0.0f, 0.0f,   /* Center */
             -0.5f, 0.6f, 0.0f,  /* Top-left */
             0.5f, 0.6f, 0.0f,   /* Top-right */
@@ -30,31 +31,31 @@ class HelloTriange : public BaseApplication
             0.5f, -0.6f, 0.0f,  /* Bottom-Right */
         };
 
-        static constexpr GLuint horizontal_indices[] = {
+        static constexpr std::array<GLuint, 6> horizontal_indices{
             0, 1, 2, /* Left triangle */
             0, 3, 4, /* Top triange */
         };
 
-        static constexpr GLuint vertical_indices[] = {
+        static constexpr std::array<GLuint, 6> vertical_indices{
             0, 1, 2, /* Top triangle */
             0, 3, 4, /* Bottom triangle */
         };
 
         /* Generate buffers */
-        glGenVertexArrays(2, vaos);
-        glGenBuffers(2, vbos);
-        glGenBuffers(2, ebos);
+        glGenVertexArrays(static_cast<GLsizei>(vaos.size()), vaos.data());
+        glGenBuffers(static_cast<GLsizei>(vbos.size()), vbos.data());
+        glGenBuffers(static_cast<GLsizei>(ebos.size()), ebos.data());
 
         /* Bind the VAO first so the latter commands are tied to it */
         glBindVertexArray(vaos[0]);
 
         /* Copy the vertices into the VBO */
         glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof horizontal_vertices, horizontal_vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, Utils::arrayDataSize(horizontal_vertices), horizontal_vertices.data(), GL_STATIC_DRAW);
 
         /* Copie the indices into the EBO */
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof horizontal_indices, horizontal_indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, Utils::arrayDataSize(horizontal_indices), horizontal_indices.data(), GL_STATIC_DRAW);
 
         /* Set vertices attributes */
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
@@ -65,11 +66,11 @@ class HelloTriange : public BaseApplication
 
         /* Copy the vertices into the VBO */
         glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof vertical_vertices, vertical_vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, Utils::arrayDataSize(vertical_vertices), vertical_vertices.data(), GL_STATIC_DRAW);
 
         /* Copie the indices into the EBO */
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos[1]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof vertical_indices, vertical_indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, Utils::arrayDataSize(vertical_indices), vertical_indices.data(), GL_STATIC_DRAW);
 
         /* Set vertices attributes */
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
@@ -89,7 +90,8 @@ class HelloTriange : public BaseApplication
     void
     render(void) override
     {
-        glClearColor(0.9f, 0.0f, 0.7f, 1.0f);
+        Utils::RGBColour colour = scroller.getNext();
+        glClearColor(colour.r, colour.g, colour.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         horizontal_shader->useProgram();
@@ -109,18 +111,17 @@ class HelloTriange : public BaseApplication
     void
     teardown(void) override
     {
-        glDeleteVertexArrays(2, vaos);
-        glDeleteBuffers(2, vbos);
-        glDeleteBuffers(2, ebos);
+        glDeleteVertexArrays(static_cast<GLsizei>(vaos.size()), vaos.data());
+        glDeleteBuffers(static_cast<GLsizei>(vbos.size()), vbos.data());
+        glDeleteBuffers(static_cast<GLsizei>(ebos.size()), ebos.data());
         horizontal_shader.reset();
         vertical_shader.reset();
     }
 
     std::unique_ptr<Shader> horizontal_shader = nullptr;
     std::unique_ptr<Shader> vertical_shader = nullptr;
-    GLuint vaos[2];
-    GLuint vbos[2];
-    GLuint ebos[2];
+    std::array<GLuint, 2> vaos, vbos, ebos;
+    Utils::ScrollingColour scroller{};
 };
 
 int
