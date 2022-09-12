@@ -1,5 +1,8 @@
 #include "Utils.hpp"
 
+#include <fmt/core.h>
+#include <stb_image.h>
+
 namespace Utils
 {
 
@@ -14,6 +17,30 @@ RGBColour
 ScrollingColour::getCurrent(void) const noexcept
 {
     return colour;
+}
+
+Image::Image(const std::filesystem::path &img_path) noexcept
+{
+    stbi_set_flip_vertically_on_load(true);
+    data = {0, 0, 0, nullptr};
+    if (!std::filesystem::is_regular_file(img_path)) {
+        fmt::print(stderr, "Image: Path '{}' is not a file.\n", img_path.string());
+        return;
+    }
+    data.pixels = stbi_load(img_path.c_str(), &data.width, &data.height, &data.channels, 0);
+}
+
+Image::~Image() noexcept
+{
+    if (nullptr != data.pixels) {
+        stbi_image_free(data.pixels);
+    }
+}
+
+const ImageData &
+Image::getImageData(void) const noexcept
+{
+    return data;
 }
 
 void

@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <array>
+#include <filesystem>
 
 namespace Utils
 {
@@ -27,6 +28,28 @@ class ScrollingColour
     };
     ScrollingState state = ScrollingState::RED;
     RGBColour colour = {1.0f, 0.0f, 0.0f};
+};
+
+struct ImageData
+{
+    int width, height, channels;
+    unsigned char *pixels;
+};
+
+class Image
+{
+  public:
+    Image(const std::filesystem::path &img_path) noexcept;
+    ~Image() noexcept;
+    Image(const Image &) = delete;
+    Image(Image &&) = delete;
+    Image &operator=(const Image &) = delete;
+    Image &operator=(Image &&) = delete;
+
+    const ImageData &getImageData(void) const noexcept;
+
+  private:
+    ImageData data;
 };
 
 template <class T, std::size_t N>
