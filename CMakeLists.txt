@@ -25,6 +25,9 @@ target_link_libraries(
   PUBLIC glad glm::glm
   PRIVATE fmt::fmt)
 
+add_library(Utils src/Utils/Utils.cpp)
+target_include_directories(Utils PUBLIC src/Utils)
+
 add_executable(HelloTriangle src/ch1-hello-triangle/HelloTriangle.cpp)
 target_link_libraries(
   HelloTriangle
