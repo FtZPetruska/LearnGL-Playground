@@ -41,3 +41,16 @@ get_filename_component(VERTEX_SHADER_FILE "src/ch1-hello-triangle/shader.vs" ABS
 get_filename_component(HORIZONTAL_FRAGMENT_SHADER_FILE "src/ch1-hello-triangle/horizontal-shader.fs" ABSOLUTE)
 get_filename_component(VERTICAL_FRAGMENT_SHADER_FILE "src/ch1-hello-triangle/vertical-shader.fs" ABSOLUTE)
 configure_file(src/ch1-hello-triangle/HelloTriangleFiles.hpp.in HelloTriangleFiles.hpp)
+
+add_executable(Shading src/ch2-shading/Shading.cpp)
+target_link_libraries(
+  Shading
+  PRIVATE fmt::fmt
+          glad
+          glfw
+          Shader
+          Utils)
+
+get_filename_component(VERTEX_SHADER_FILE "src/ch2-shading/shader.vs" ABSOLUTE)
+get_filename_component(FRAGMENT_SHADER_FILE "src/ch2-shading/shader.fs" ABSOLUTE)
+configure_file(src/ch2-shading/ShadingFiles.hpp.in ShadingFiles.hpp)
