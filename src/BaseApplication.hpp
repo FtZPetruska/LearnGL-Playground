@@ -1,3 +1,6 @@
+#ifndef BASEAPPLICATION_HPP
+#define BASEAPPLICATION_HPP
+
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
@@ -88,3 +91,5 @@ class BaseApplication
 
     ~BaseApplication() = default;
 };
+
+#endif
