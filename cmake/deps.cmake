@@ -43,10 +43,8 @@ function(get_dependencies)
   endif()
 
   add_library(glad "${CMAKE_SOURCE_DIR}/external/glad/src/glad.c")
-  target_include_directories(glad
-                             PUBLIC "${CMAKE_SOURCE_DIR}/external/glad/include")
+  target_include_directories(glad PUBLIC "${CMAKE_SOURCE_DIR}/external/glad/include")
 
   add_library(stb_image "${CMAKE_SOURCE_DIR}/external/stb_image/stb_image.c")
-  target_include_directories(stb_image
-                             PUBLIC "${CMAKE_SOURCE_DIR}/external/stb_image")
+  target_include_directories(stb_image PUBLIC "${CMAKE_SOURCE_DIR}/external/stb_image")
 endfunction(get_dependencies)

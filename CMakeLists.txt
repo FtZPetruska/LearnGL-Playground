@@ -37,11 +37,7 @@ target_link_libraries(
           Shader
           Utils)
 
-get_filename_component(VERTEX_SHADER_FILE "src/ch1-hello-triangle/shader.vs"
-                       ABSOLUTE)
-get_filename_component(HORIZONTAL_FRAGMENT_SHADER_FILE
-                       "src/ch1-hello-triangle/horizontal-shader.fs" ABSOLUTE)
-get_filename_component(VERTICAL_FRAGMENT_SHADER_FILE
-                       "src/ch1-hello-triangle/vertical-shader.fs" ABSOLUTE)
-configure_file(src/ch1-hello-triangle/HelloTriangleFiles.hpp.in
-               HelloTriangleFiles.hpp)
+get_filename_component(VERTEX_SHADER_FILE "src/ch1-hello-triangle/shader.vs" ABSOLUTE)
+get_filename_component(HORIZONTAL_FRAGMENT_SHADER_FILE "src/ch1-hello-triangle/horizontal-shader.fs" ABSOLUTE)
+get_filename_component(VERTICAL_FRAGMENT_SHADER_FILE "src/ch1-hello-triangle/vertical-shader.fs" ABSOLUTE)
+configure_file(src/ch1-hello-triangle/HelloTriangleFiles.hpp.in HelloTriangleFiles.hpp)
