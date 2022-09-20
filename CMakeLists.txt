@@ -18,6 +18,9 @@ include(warnings)
 get_dependencies()
 set_warnings()
 
+get_filename_component(YANFEI_FILE "assets/yanfei.jpg" ABSOLUTE)
+get_filename_component(HUTAO_FILE "assets/hutao.jpg" ABSOLUTE)
+
 add_library(Shader src/Shader/Shader.cpp)
 target_include_directories(Shader PUBLIC src/Shader)
 target_link_libraries(
@@ -66,6 +69,4 @@ target_link_libraries(
 
 get_filename_component(VERTEX_SHADER_FILE "src/ch3-texture/shader.vs" ABSOLUTE)
 get_filename_component(FRAGMENT_SHADER_FILE "src/ch3-texture/shader.fs" ABSOLUTE)
-get_filename_component(YANFEI_FILE "src/ch3-texture/yanfei.jpg" ABSOLUTE)
-get_filename_component(HUTAO_FILE "src/ch3-texture/hutao.jpg" ABSOLUTE)
 configure_file(src/ch3-texture/TextureFiles.hpp.in TextureFiles.hpp)

@@ -40,4 +40,6 @@ The code samples provided by [Joey de Vries](http://joeydevries.com/) are publis
 
 [stb_image](https://github.com/nothings/stb/blob/master/LICENSE)
 
+Images in the `assets` directory are just memes I was sent.
+
 The modified code in this repo is distributed under the MIT license. It is mainly just to be covered for a permissive license, this code is just hacking around a tutorial.
