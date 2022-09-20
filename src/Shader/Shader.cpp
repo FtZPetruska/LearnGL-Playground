@@ -2,6 +2,7 @@
 
 #include <fmt/core.h>
 #include <fstream>
+#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 
 enum class ShaderLogType
@@ -187,40 +188,40 @@ void
 Shader::setUniform(const std::string &name, const glm::vec2 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
-    glUniform2f(location, value.x, value.y);
+    glUniform2fv(location, 1, glm::value_ptr(value));
 }
 
 void
 Shader::setUniform(const std::string &name, const glm::vec3 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
-    glUniform3f(location, value.x, value.y, value.z);
+    glUniform3fv(location, 1, glm::value_ptr(value));
 }
 
 void
 Shader::setUniform(const std::string &name, const glm::vec4 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
-    glUniform4f(location, value.x, value.y, value.z, value.w);
+    glUniform4fv(location, 1, glm::value_ptr(value));
 }
 
 void
 Shader::setUniform(const std::string &name, const glm::mat2 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
-    glUniformMatrix2fv(location, 1, GL_FALSE, &value[0][0]);
+    glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void
 Shader::setUniform(const std::string &name, const glm::mat3 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
-    glUniformMatrix3fv(location, 1, GL_FALSE, &value[0][0]);
+    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void
 Shader::setUniform(const std::string &name, const glm::mat4 &value) const noexcept
 {
     GLint location = glGetUniformLocation(shader_program, name.c_str());
-    glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
