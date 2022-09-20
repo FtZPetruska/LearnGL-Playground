@@ -1,5 +1,5 @@
-#ifndef SHADINGFILES_HPP
-#define SHADINGFILES_HPP
+#ifndef TEXTUREFILES_HPP
+#define TEXTUREFILES_HPP
 
 static constexpr char VERTEX_SHADER_FILE[] = "@VERTEX_SHADER_FILE@";
 static constexpr char FRAGMENT_SHADER_FILE[] = "@FRAGMENT_SHADER_FILE@";
