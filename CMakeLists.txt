@@ -70,3 +70,16 @@ target_link_libraries(
 get_filename_component(VERTEX_SHADER_FILE "src/ch3-texture/shader.vs" ABSOLUTE)
 get_filename_component(FRAGMENT_SHADER_FILE "src/ch3-texture/shader.fs" ABSOLUTE)
 configure_file(src/ch3-texture/TextureFiles.hpp.in TextureFiles.hpp)
+
+add_executable(Matrix src/ch4-matrix/Matrix.cpp)
+target_link_libraries(
+  Matrix
+  PRIVATE glad
+          glfw
+          glm::glm
+          Shader
+          Utils)
+
+get_filename_component(VERTEX_SHADER_FILE "src/ch4-matrix/shader.vs" ABSOLUTE)
+get_filename_component(FRAGMENT_SHADER_FILE "src/ch4-matrix/shader.fs" ABSOLUTE)
+configure_file(src/ch4-matrix/MatrixFiles.hpp.in MatrixFiles.hpp)
