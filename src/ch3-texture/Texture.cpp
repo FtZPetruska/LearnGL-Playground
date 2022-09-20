@@ -83,9 +83,11 @@ class Texture : public BaseApplication
         /* Triangle movement */
         if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
             updateHorizontalOffset(-0.02f);
+            shader->setUniform("direction", -1);
         }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
             updateHorizontalOffset(0.02f);
+            shader->setUniform("direction", 1);
         }
         if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
             updateVerticalOffset(-0.02f);
